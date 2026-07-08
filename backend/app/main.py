@@ -14,13 +14,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# B6 fix: Expanded CORS origins to cover all local dev ports
+# B6 fix: Expanded CORS origins to cover all local dev ports and production Firebase URL
 origins = [
     "http://localhost:3000",  # Next.js dashboard
     "http://localhost:3001",
     "http://localhost:5173",  # Vite web-app
     "http://localhost:5174",
     "http://localhost:8080",
+    "https://smt-hlth-webapp-2026.web.app",
+    "https://smt-hlth-webapp-2026.firebaseapp.com",
 ]
 
 app.add_middleware(
