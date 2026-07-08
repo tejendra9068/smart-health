@@ -41,7 +41,7 @@ export default function AlertsPage() {
   }
 
   if (error) {
-    return <div className="p-8 text-destructive">Error loading alerts. Make sure the backend is running at http://localhost:8000.</div>;
+    return <div className="p-8 text-destructive">Error loading alerts. Make sure the backend is running and reachable.</div>;
   }
 
   const criticalAlerts = alerts?.filter((a: any) => a.severity === 'critical') || [];
