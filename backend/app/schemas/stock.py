@@ -8,6 +8,7 @@ class StockBase(BaseModel):
     medicine_id: int
     current_quantity: int
     reorder_level: Optional[int] = 0
+    expiry_date: Optional[datetime] = None
 
 class StockCreate(StockBase):
     pass

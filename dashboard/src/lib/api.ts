@@ -14,6 +14,7 @@ export async function createFacility(data: {
   district_id: number;
   address?: string;
   total_beds?: number;
+  occupied_beds?: number;
   contact_number?: string;
 }) {
   const response = await fetch(`${API_BASE_URL}/facilities/`, {
@@ -56,6 +57,7 @@ export async function updateStock(data: {
   medicine_id: number;
   current_quantity: number;
   reorder_level?: number;
+  expiry_date?: string | null;
 }) {
   const response = await fetch(`${API_BASE_URL}/stock/update`, {
     method: 'POST',

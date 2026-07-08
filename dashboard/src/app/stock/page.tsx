@@ -16,6 +16,7 @@ type StockItem = {
   medicine_id: number;
   current_quantity: number;
   reorder_level: number;
+  expiry_date: string | null;
   medicine: {
     name: string;
     unit: string;
@@ -29,6 +30,7 @@ export default function StockPage() {
   const [selectedFacility, setSelectedFacility] = useState<string>('');
   const [editItem, setEditItem] = useState<StockItem | null>(null);
   const [newQty, setNewQty] = useState<number>(0);
+  const [newExpiry, setNewExpiry] = useState<string>('');
 
   const { data: facilities, isLoading: isLoadingFacilities } = useQuery({
     queryKey: ['facilities'],
@@ -49,6 +51,7 @@ export default function StockPage() {
         medicine_id: item.medicine_id,
         current_quantity: newQty,
         reorder_level: item.reorder_level,
+        expiry_date: newExpiry ? new Date(newExpiry).toISOString() : null,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stock', selectedFacility] });
@@ -60,6 +63,7 @@ export default function StockPage() {
   const openEdit = (item: StockItem) => {
     setEditItem(item);
     setNewQty(item.current_quantity);
+    setNewExpiry(item.expiry_date ? new Date(item.expiry_date).toISOString().split('T')[0] : '');
   };
 
   return (
@@ -121,6 +125,7 @@ export default function StockPage() {
                     <TableHead>Category</TableHead>
                     <TableHead className="text-right">Quantity</TableHead>
                     <TableHead className="text-right">Reorder Level</TableHead>
+                    <TableHead className="text-right">Expiry Date</TableHead>
                     <TableHead className="text-right">Status</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
@@ -147,6 +152,15 @@ export default function StockPage() {
                         </TableCell>
                         <TableCell className="text-right text-muted-foreground">
                           {item.reorder_level}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {item.expiry_date ? (
+                            <span className={new Date(item.expiry_date) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) ? 'text-destructive font-medium' : 'text-muted-foreground'}>
+                              {new Date(item.expiry_date).toLocaleDateString()}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
                         </TableCell>
                         <TableCell className="text-right">
                           {isLow ? (
@@ -207,6 +221,15 @@ export default function StockPage() {
               </div>
               <div className="text-xs text-muted-foreground">
                 Reorder level: {editItem.reorder_level} {editItem.medicine.unit}s
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Expiry Date</label>
+                <input
+                  type="date"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  value={newExpiry}
+                  onChange={(e) => setNewExpiry(e.target.value)}
+                />
               </div>
               {newQty <= editItem.reorder_level && (
                 <p className="text-destructive text-sm flex items-center gap-1">

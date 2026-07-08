@@ -13,6 +13,7 @@ class Facility(Base):
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     total_beds = Column(Integer, default=0)
+    occupied_beds = Column(Integer, default=0)
     contact_number = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
 

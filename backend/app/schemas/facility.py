@@ -7,6 +7,7 @@ class FacilityBase(BaseModel):
     district_id: int
     address: Optional[str] = None
     total_beds: Optional[int] = 0
+    occupied_beds: Optional[int] = 0
     contact_number: Optional[str] = None
     is_active: Optional[bool] = True
 

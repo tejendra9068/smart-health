@@ -11,6 +11,7 @@ class Stock(Base):
     medicine_id = Column(Integer, ForeignKey("medicines.id"))
     current_quantity = Column(Integer, default=0)
     reorder_level = Column(Integer, default=0)
+    expiry_date = Column(DateTime(timezone=True), nullable=True)
     last_updated_time = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     updated_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 

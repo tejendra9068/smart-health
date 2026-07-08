@@ -35,6 +35,8 @@ def update_stock(db: Session, stock: schemas.StockCreate, user_id: int = 1):
     if db_stock:
         db_stock.current_quantity = stock.current_quantity
         db_stock.reorder_level = stock.reorder_level
+        if stock.expiry_date:
+            db_stock.expiry_date = stock.expiry_date
         db_stock.updated_by_user_id = user_id
     else:
         db_stock = models.Stock(
@@ -42,6 +44,7 @@ def update_stock(db: Session, stock: schemas.StockCreate, user_id: int = 1):
             medicine_id=stock.medicine_id,
             current_quantity=stock.current_quantity,
             reorder_level=stock.reorder_level or 0,
+            expiry_date=stock.expiry_date,
             updated_by_user_id=user_id
         )
         db.add(db_stock)
@@ -49,16 +52,14 @@ def update_stock(db: Session, stock: schemas.StockCreate, user_id: int = 1):
     db.commit()
     db.refresh(db_stock)
     
-    # Simple alert generation logic based on PRD FR-008
-    # "If stock may finish in 7 days or less, create warning alert."
-    # Since we don't have consumption data yet, let's use a simple absolute threshold for MVP
+    # Automated Low-Stock Alerts logic
     medicine = db.query(models.Medicine).filter(models.Medicine.id == stock.medicine_id).first()
-    if medicine and db_stock.current_quantity <= medicine.minimum_stock_rule:
+    if medicine and db_stock.reorder_level > 0 and db_stock.current_quantity <= db_stock.reorder_level:
         create_alert(db, schemas.AlertCreate(
             facility_id=stock.facility_id,
             alert_type="stock_critical",
             severity="critical",
-            message=f"{medicine.name} stock is critically low ({db_stock.current_quantity} left)."
+            message=f"{medicine.name} stock is critically low ({db_stock.current_quantity} left). Reorder level is {db_stock.reorder_level}."
         ))
 
     return db_stock

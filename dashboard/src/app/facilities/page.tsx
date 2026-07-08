@@ -15,6 +15,7 @@ type NewFacilityForm = {
   district_id: number;
   address: string;
   total_beds: number;
+  occupied_beds: number;
   contact_number: string;
 };
 
@@ -27,6 +28,7 @@ export default function FacilitiesPage() {
     district_id: 1,
     address: '',
     total_beds: 0,
+    occupied_beds: 0,
     contact_number: '',
   });
 
@@ -41,7 +43,7 @@ export default function FacilitiesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['facilities'] });
       setShowModal(false);
-      setForm({ name: '', facility_type: 'PHC', district_id: 1, address: '', total_beds: 0, contact_number: '' });
+      setForm({ name: '', facility_type: 'PHC', district_id: 1, address: '', total_beds: 0, occupied_beds: 0, contact_number: '' });
     },
   });
 
@@ -89,7 +91,7 @@ export default function FacilitiesPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead>Contact</TableHead>
-                <TableHead>Beds</TableHead>
+                <TableHead>Capacity</TableHead>
                 <TableHead className="text-right">Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -129,7 +131,20 @@ export default function FacilitiesPage() {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>{facility.total_beds ?? 0}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1 w-24">
+                      <div className="flex justify-between text-xs text-muted-foreground font-medium">
+                        <span>{facility.occupied_beds ?? 0} used</span>
+                        <span>{facility.total_beds ?? 0} total</span>
+                      </div>
+                      <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${(facility.occupied_beds ?? 0) / (facility.total_beds || 1) > 0.9 ? 'bg-destructive' : 'bg-primary'}`} 
+                          style={{ width: `${Math.min(100, ((facility.occupied_beds ?? 0) / (facility.total_beds || 1)) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </TableCell>
                   <TableCell className="text-right">
                     <Badge
                       variant="outline"
@@ -211,6 +226,19 @@ export default function FacilitiesPage() {
                     onChange={(e) => setForm({ ...form, total_beds: Number(e.target.value) })}
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Occupied Beds</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={form.total_beds}
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    value={form.occupied_beds}
+                    onChange={(e) => setForm({ ...form, occupied_beds: Number(e.target.value) })}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">Contact Number</label>
                   <input
