@@ -334,7 +334,7 @@ function App() {
             </div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">Settings &amp; Preferences</h3>
             <p className="text-slate-500 mb-6">Manage your account settings, notifications, and application preferences here.</p>
-            <p className="text-slate-400 text-sm">Backend: {backendOnline ? '✅ Connected to localhost:8000' : '❌ Offline — start the FastAPI server'}</p>
+            <p className="text-slate-400 text-sm">Backend: {backendOnline ? `✅ Connected to ${API_BASE}` : '❌ Offline — start the FastAPI server'}</p>
           </div>
         )}
       </main>
